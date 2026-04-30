@@ -23,15 +23,26 @@ classifiers = [
 
 dependencies = [
     "f5-tts>=1.1.0",
-    "datasets>=3.0",
+    "datasets>=3.0,<4.0",
     "huggingface-hub>=0.20",
     "accelerate>=0.30",
     "soundfile>=0.12",
+    "numpy>=1.24",
     "tqdm>=4.60",
     "pydub>=0.25",
 ]
 
 [project.optional-dependencies]
+avatar = [
+    "diffusers>=0.27",
+    "transformers>=4.40",
+    "opencv-python>=4.9",
+    "mediapipe>=0.10",
+    "omegaconf>=2.3",
+    "einops>=0.7",
+    "pyyaml>=6.0",
+    "ffmpeg-python>=0.2",
+]
 train = [
     "wandb>=0.16",
     "tensorboard>=2.16",

@@ -9,6 +9,7 @@
       2. Prepare dataset (resample, normalize, split)
       3. Fine-tune F5-TTS v1 Base
       4. Run inference test
+      5. Generate talking avatar video (optional, requires -AvatarImage)
 
 .PARAMETER MaxHours
     Maximum hours of audio to download (default: 100)
@@ -33,6 +34,8 @@ param(
     [switch]$SkipPrepare,
     [string]$HfToken = $env:HF_TOKEN,
     [string]$MixedPrecision = "fp16",
+    [string]$AvatarImage = "",
+    [string]$AvatarText = "",
     [int]$BatchSize = 0,
     [int]$Epochs = 0
 )
@@ -132,17 +135,45 @@ Write-Host "[4/4] Running inference test..." -ForegroundColor Yellow
 if ($LASTEXITCODE -ne 0) {
     Write-Host "WARNING: Inference test failed (model may need more training)" -ForegroundColor DarkYellow
 } else {
-    Write-Host "[4/4] Inference test complete." -ForegroundColor Green
+    Write-Host "[4/5] Inference test complete." -ForegroundColor Green
+}
+Write-Host ""
+
+# Step 5: Generate avatar video (optional)
+if ($AvatarImage) {
+    Write-Host "[5/5] Generating talking avatar video..." -ForegroundColor Yellow
+    $avatarArgs = @(
+        "$RepoRoot\scripts\generate_avatar.py",
+        "--image", $AvatarImage,
+        "--output", "$RepoRoot\videos"
+    )
+    if ($AvatarText) {
+        $avatarArgs += "--text"
+        $avatarArgs += $AvatarText
+    } else {
+        $avatarArgs += "--audio"
+        $avatarArgs += "$RepoRoot\outputs"
+    }
+    & $Python @avatarArgs
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "WARNING: Avatar generation failed" -ForegroundColor DarkYellow
+    } else {
+        Write-Host "[5/5] Avatar video generated." -ForegroundColor Green
+    }
+} else {
+    Write-Host "[5/5] Skipping avatar (no -AvatarImage provided)" -ForegroundColor DarkGray
 }
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host " Pipeline Complete!" -ForegroundColor Cyan
-Write-Host " Outputs: $RepoRoot\outputs\" -ForegroundColor Cyan
+Write-Host " Audio:   $RepoRoot\outputs\" -ForegroundColor Cyan
+Write-Host " Videos:  $RepoRoot\videos\" -ForegroundColor Cyan
 Write-Host " Model:   $RepoRoot\checkpoints\" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. Listen to outputs/ samples"
 Write-Host "  2. Upload: python scripts/upload_to_hf.py --checkpoint checkpoints/model_last.safetensors"
-Write-Host "  3. Use in video pipeline: set F5TTS_PTBR_CKPT=checkpoints/model_last.safetensors"
+Write-Host "  3. Generate avatar: .\run_pipeline.ps1 -SkipDownload -SkipPrepare -AvatarImage photos\me.jpg"
+Write-Host "  4. Use in video pipeline: set F5TTS_PTBR_CKPT=checkpoints/model_last.safetensors"

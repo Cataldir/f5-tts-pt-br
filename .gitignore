@@ -42,5 +42,9 @@ logs/
 wandb/
 *.log
 
+# Output artifacts
+outputs/
+videos/
+
 # Env
 .env
