@@ -1,0 +1,61 @@
+[project]
+name = "f5-tts-pt-br"
+version = "0.1.0"
+description = "F5-TTS fine-tuned for Brazilian Portuguese (PT-BR) with voice cloning"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Ricardo Cataldi", email = "ricardo@cataldi.dev" }]
+keywords = ["tts", "text-to-speech", "portuguese", "pt-br", "voice-cloning", "f5-tts"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "f5-tts>=1.1.0",
+    "datasets>=3.0",
+    "huggingface-hub>=0.20",
+    "accelerate>=0.30",
+    "soundfile>=0.12",
+    "tqdm>=4.60",
+    "pydub>=0.25",
+]
+
+[project.optional-dependencies]
+train = [
+    "wandb>=0.16",
+    "tensorboard>=2.16",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/Cataldir/f5-tts-pt-br"
+Repository = "https://github.com/Cataldir/f5-tts-pt-br"
+"Model Card" = "https://huggingface.co/Cataldir/F5-TTS-pt-br"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

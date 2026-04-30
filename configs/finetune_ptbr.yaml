@@ -1,0 +1,62 @@
+# F5-TTS PT-BR Fine-tuning Configuration
+# Adapted for single RTX 3060 6GB GPU
+# Based on F5TTS_v1_Base with reduced batch size for VRAM constraints
+
+hydra:
+  run:
+    dir: ckpts/F5TTS_v1_Base_ptbr/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+datasets:
+  name: CommonVoice_PT_BR
+  batch_size_per_gpu: 9600  # Reduced for 6GB VRAM (base uses 38400 for 80GB)
+  batch_size_type: frame
+  max_samples: 16  # Reduced from 64 for memory
+  num_workers: 4  # Laptop CPU count
+
+optim:
+  epochs: 50  # More epochs since dataset is smaller
+  learning_rate: 1.0e-5  # Lower LR for fine-tuning (base uses 7.5e-5)
+  num_warmup_updates: 500  # Shorter warmup for fine-tune
+  grad_accumulation_steps: 4  # Simulate larger batch via accumulation
+  max_grad_norm: 1.0
+  bnb_optimizer: True  # 8-bit Adam to save VRAM
+
+model:
+  name: F5TTS_v1_Base
+  tokenizer: custom  # Use custom vocab with Portuguese characters
+  tokenizer_path: null  # Will be set to data/processed/vocab.txt at runtime
+  backbone: DiT
+  arch:
+    dim: 1024
+    depth: 22
+    heads: 16
+    ff_mult: 2
+    text_dim: 512
+    text_mask_padding: True
+    qk_norm: null
+    conv_layers: 4
+    pe_attn_head: null
+    attn_backend: torch
+    attn_mask_enabled: False
+    checkpoint_activations: True  # Save VRAM via gradient checkpointing
+  mel_spec:
+    target_sample_rate: 24000
+    n_mel_channels: 100
+    hop_length: 256
+    win_length: 1024
+    n_fft: 1024
+    mel_spec_type: vocos
+  vocoder:
+    is_local: False
+    local_path: null
+
+ckpts:
+  logger: tensorboard  # Lighter than wandb for local training
+  wandb_project: null
+  wandb_run_name: null
+  wandb_resume_id: null
+  log_samples: True
+  save_per_updates: 5000
+  keep_last_n_checkpoints: 3
+  last_per_updates: 1000
+  save_dir: ckpts/F5TTS_v1_Base_ptbr

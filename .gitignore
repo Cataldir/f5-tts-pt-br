@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data artifacts (large files - use git lfs or don't commit)
+data/raw/
+data/processed/
+*.wav
+*.mp3
+*.tar.gz
+*.zip
+
+# Model checkpoints
+checkpoints/
+*.pt
+*.safetensors
+*.bin
+
+# HuggingFace cache
+.cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+wandb/
+*.log
+
+# Env
+.env
